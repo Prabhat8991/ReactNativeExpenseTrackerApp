@@ -47,10 +47,14 @@ function expenseReducer(state, action) {
             return [{ ...action.payload, id: id }, ...state]
         case 'UPDATE':
             const updatableExpenseIndex = state.findIndex((expense) => expense.id === action.payload.id)
+            console.log('updatableExpenseIndex ' + updatableExpenseIndex)
             const updatableExpense = state[updatableExpenseIndex]
             const updateitem = { ...updatableExpense, ...action.payload.data }
+            console.log('updateitem ' + updateitem.description)
+
             const updatedExpenses = [...state]
             updatedExpenses[updatableExpenseIndex] = updateitem
+            return updatedExpenses
         case 'DELETE':
             return state.filter((expense) => expense.id !== action.payload)
         default:
@@ -86,7 +90,14 @@ function ExpensesContextProvider({ children }) {
         })
     }
 
-    return <ExpensesContext.Provider>{children}</ExpensesContext.Provider>
+    const value = {
+        expenses: expensesState,
+        addExpense: addExpense,
+        deleteExpense: deleteExpense,
+        updateExpense: updateExpense
+    }
+
+    return <ExpensesContext.Provider value={value}>{children}</ExpensesContext.Provider>
 }
 
 export default ExpensesContextProvider
