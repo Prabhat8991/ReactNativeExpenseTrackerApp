@@ -5,6 +5,7 @@ import { GlobalStyles } from "../constants/styles"
 import Button from "../components/ui/Button"
 import { useContext } from "react"
 import { ExpensesContext } from "../store/expenses-context"
+import ExpenseForm from "../components/manageexpense/ExpenseForm"
 
 function ManageExpense({ route, navigation }) {
     const expensesCtx = useContext(ExpensesContext)
@@ -26,23 +27,21 @@ function ManageExpense({ route, navigation }) {
         navigation.goBack();
     }
 
-    function confirmHandler() {
+    function confirmHandler(expenseData) {
         if (isEditing) {
             console.log
-            expensesCtx.updateExpense(editedExpenseId, { description: 'test!!!', amount: 20.99, date: new Date('2023-09-23') })
+            expensesCtx.updateExpense(editedExpenseId, expenseData)
         } else {
-            expensesCtx.addExpense({ description: 'test', amount: 19.99, date: new Date('2023-09-23') })
+            expensesCtx.addExpense(expenseData)
         }
         navigation.goBack();
     }
 
-    return <View style={styles.container}>
-        <View style={styles.buttonContainer}>
-            <Button style={styles.buttons} mode="flat" onPress={cancelHandler}>Cancel</Button>
-            <Button style={styles.buttons} onPress={confirmHandler}>{isEditing ? 'update' : 'Add'}</Button>
-        </View>
-        {isEditing && <View style={styles.deleteContainer}><IconButton icon='trash' color={GlobalStyles.colors.error500} size={36} onPress={deleteExpense} /></View>}
-    </View>
+    return (
+        <View style={styles.container}>
+            <ExpenseForm onSubmit={confirmHandler} cancelHandler={cancelHandler} submitButtonLabel={isEditing ? 'Update' : 'Add'} />
+            {isEditing && <View style={styles.deleteContainer}><IconButton icon='trash' color={GlobalStyles.colors.error500} size={36} onPress={deleteExpense} /></View>}
+        </View>)
 }
 
 export default ManageExpense
@@ -60,13 +59,4 @@ const styles = StyleSheet.create({
         borderTopColor: GlobalStyles.colors.primary200,
         alignItems: 'center'
     },
-    buttonContainer: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    buttons: {
-        minWidth: 120,
-        marginHorizontal: 8
-    }
 })
