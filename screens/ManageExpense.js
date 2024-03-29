@@ -6,6 +6,7 @@ import Button from "../components/ui/Button"
 import { useContext } from "react"
 import { ExpensesContext } from "../store/expenses-context"
 import ExpenseForm from "../components/manageexpense/ExpenseForm"
+import { storeExpense, updateExpense, deleteExpense } from '../util/http'
 
 function ManageExpense({ route, navigation }) {
     const expensesCtx = useContext(ExpensesContext)
@@ -20,22 +21,23 @@ function ManageExpense({ route, navigation }) {
         })
     }, [navigation, isEditing])
 
-    function deleteExpense() {
+    function onDelete() {
+        deleteExpense(editedExpenseId)
         expensesCtx.deleteExpense(editedExpenseId)
         navigation.goBack();
-
     }
 
     function cancelHandler() {
         navigation.goBack();
     }
 
-    function confirmHandler(expenseData) {
+    async function confirmHandler(expenseData) {
         if (isEditing) {
-            console.log
             expensesCtx.updateExpense(editedExpenseId, expenseData)
+            updateExpense(editedExpenseId, expenseData)
         } else {
-            expensesCtx.addExpense(expenseData)
+            const id = await storeExpense(expenseData)
+            expensesCtx.addExpense({ ...expenseData, id: id })
         }
         navigation.goBack();
     }
@@ -43,7 +45,7 @@ function ManageExpense({ route, navigation }) {
     return (
         <View style={styles.container}>
             <ExpenseForm defaultValues={selectedExpense} onSubmit={confirmHandler} cancelHandler={cancelHandler} submitButtonLabel={isEditing ? 'Update' : 'Add'} />
-            {isEditing && <View style={styles.deleteContainer}><IconButton icon='trash' color={GlobalStyles.colors.error500} size={36} onPress={deleteExpense} /></View>}
+            {isEditing && <View style={styles.deleteContainer}><IconButton icon='trash' color={GlobalStyles.colors.error500} size={36} onPress={onDelete} /></View>}
         </View>)
 }
 

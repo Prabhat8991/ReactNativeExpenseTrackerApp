@@ -29,8 +29,10 @@ function ExpenseForm({ defaultValues, cancelHandler, onSubmit, submitButtonLabel
         }
 
         const amountIsValid = !isNaN(expenseData.amount) && expenseData.amount > 0
-        const dateIsValid = new Date(expenseData.date).toString() !== 'Invalid Date'
+        const dateIsValid = expenseData.date.toString() !== 'Invalid Date'
         const description = expenseData.description.trim().length > 0
+
+        console.log(amountIsValid + dateIsValid + description)
 
         if (!amountIsValid || !dateIsValid || !description) {
             Alert.alert('Invalid input', 'Please check your input values')
